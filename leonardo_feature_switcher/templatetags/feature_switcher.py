@@ -42,3 +42,35 @@ def is_off_func(context, action, *args, **kwargs):
     context[action] = is_off(request, action, **kwargs)
 
     return ''
+
+
+@register.assignment_tag(takes_context=True)
+def is_on_as(context, action, *args, **kwargs):
+    """
+    {% is_on_as "my_feature" as my_feature_result %}
+    {% if my_feature_result %}
+    {% endif %}
+    """
+    request = context['request']
+
+    kwargs.update({
+        'context': context,
+    })
+
+    return is_on(request, action, *args, **kwargs)
+
+
+@register.assignment_tag(takes_context=True)
+def is_off_as(context, action, *args, **kwargs):
+    """
+    {% is_on_as "my_feature" as my_feature_result %}
+    {% if my_feature_result %}
+    {% endif %}
+    """
+    request = context['request']
+
+    kwargs.update({
+        'context': context,
+    })
+
+    return is_off(request, action, *args, **kwargs)

@@ -1,7 +1,8 @@
 
 import importlib
-from django.utils import six
 
+from django.utils import six
+from django.core.exceptions import ImproperlyConfigured
 
 CACHED_FUNCTIONS = {}
 
@@ -23,10 +24,14 @@ def get_feature_switchers():
         if not FEATURE_SWITCHERS:
             raise Exception("Add feature_switchers to LEONARDO_CONF_SPEC")
 
+        if not isinstance(FEATURE_SWITCHERS, dict):
+            raise ImproperlyConfigured(
+                "FEATURE_SWITCHERS must be a dictionary")
+
     return FEATURE_SWITCHERS
 
 
-def is_on(request, flag, **kwargs):
+def is_on(request, flag, *args, **kwargs):
 
     try:
         flag_func = get_feature_switchers()[flag]
@@ -49,7 +54,7 @@ def is_on(request, flag, **kwargs):
             else:
                 flag_func = CACHED_FUNCTIONS[flag_func]
 
-    return flag_func(request, **kwargs)
+    return flag_func(request, *args, **kwargs)
 
 
 def is_off(request, flag, **kwargs):
